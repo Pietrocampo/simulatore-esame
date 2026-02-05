@@ -18,27 +18,7 @@ body { font-family: Arial; max-width: 900px; margin: auto; }
 <script>
 let questions = [];
 let time = 50 * 60;
-fetch("domande.csv")
-  .then(res => res.text())
-  .then(text => {
-    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-    const rows = lines.slice(1);
-questions = rows
-  .map(r => r.split(";"))
-  .filter(p => p.length >= 4 && p[0] && p[1] && p[2] && p[3])
-  .map(p => ({
-    q: p[0].trim(),
-    correct: p[1].trim(),
-    options: shuffle([
-      p[1].trim(),
-      p[2].trim(),
-      p[3].trim()
-    ])
-  }));
-    questions = shuffle(questions).slice(0, 50);
-    alert("Domande caricate: " + questions.length);
-    renderQuiz();
-  })
+
   .catch(err => {
     alert("Errore nel caricamento delle domande");
     console.error(err);
@@ -57,7 +37,43 @@ function renderQuiz() {
       ).join("");
     form.appendChild(div);
   });
-}
+}fetch("domande.csv")
+  .then(res => res.text())
+  .then(text => {
+    const lines = text.split(/\r?\n/);
+
+    questions = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      let line = lines[i].trim();
+      if (!line) continue;
+
+      let sep = line.includes(";") ? ";" : ",";
+      let p = line.split(sep);
+
+      if (p.length < 4) continue;
+
+      questions.push({
+        q: p[0].trim(),
+        correct: p[1].trim(),
+        options: shuffle([
+          p[1].trim(),
+          p[2].trim(),
+          p[3].trim()
+        ])
+      });
+    }
+
+    questions = shuffle(questions).slice(0, 50);
+
+    if (questions.length === 0) {
+      alert("Nessuna domanda valida trovata nel CSV");
+      return;
+    }
+
+    renderQuiz();
+  });
+
 function finish() {
   const answers = [];
   questions.forEach((q, i) => {
@@ -84,6 +100,7 @@ setInterval(() => {
 </script>
 </body>
 </html>
+
 
 
 
