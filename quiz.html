@@ -11,18 +11,13 @@ body { font-family: Arial; max-width: 900px; margin: auto; }
 </style>
 </head>
 <body>
-
 <h2>Esame in corso</h2>
 <div class="timer" id="timer">50:00</div>
-
 <form id="quiz"></form>
-
 <button onclick="finish()">Termina esame</button>
-
 <script>
 let questions = [];
 let time = 50 * 60;
-
 fetch("domande.csv")
   .then(res => res.text())
   .then(text => {
@@ -48,11 +43,9 @@ questions = rows
     alert("Errore nel caricamento delle domande");
     console.error(err);
   });
-
 function renderQuiz() {
   const form = document.getElementById("quiz");
   form.innerHTML = "";
-
   questions.forEach((q, i) => {
     const div = document.createElement("div");
     div.className = "question";
@@ -65,10 +58,8 @@ function renderQuiz() {
     form.appendChild(div);
   });
 }
-
 function finish() {
   const answers = [];
-
   questions.forEach((q, i) => {
     const sel = document.querySelector(`input[name="q${i}"]:checked`);
     answers.push({
@@ -81,11 +72,9 @@ function finish() {
   localStorage.setItem("results", JSON.stringify(answers));
   window.location.href = "result.html";
 }
-
 function shuffle(a) {
   return a.sort(() => Math.random() - 0.5);
 }
-
 setInterval(() => {
   time--;
   if (time <= 0) finish();
@@ -93,8 +82,8 @@ setInterval(() => {
     Math.floor(time/60) + ":" + String(time%60).padStart(2,"0");
 }, 1000);
 </script>
-
 </body>
 </html>
+
 
 
