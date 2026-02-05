@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Simulatore Esame</title>
+<style>
+body { font-family: Arial; max-width: 800px; margin: auto; }
+button { padding: 10px 20px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h1>Simulatore Esame</h1>
+
+<p>
+Durata: <strong>50 minuti</strong><br>
+Domande: <strong>50</strong><br>
+Punteggio: +1 corretta / 0 non risposta / −0,5 errata<br>
+Superamento: <strong>60/100</strong>
+</p>
+
+<button onclick="start()">Inizia il test</button>
+
+<script>
+function start() {
+  window.location.href = "quiz.html";
+}
+</script>
+
+</body>
+</html>

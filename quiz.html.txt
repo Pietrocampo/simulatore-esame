@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Quiz</title>
+<style>
+body { font-family: Arial; max-width: 900px; margin: auto; }
+.question { margin-bottom: 20px; }
+.timer { font-size: 22px; color: red; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h2>Esame in corso</h2>
+<div class="timer" id="timer">50:00</div>
+
+<form id="quiz"></form>
+
+<button onclick="finish()">Termina esame</button>
+
+<script>
+let questions = [];
+let time = 50 * 60;
+
+fetch("domande.csv")
+.then(r => r.text())
+.then(text => {
+  const rows = text.trim().split("\n").slice(1);
+  questions = rows.map(r => {
+    const [q, c, w1, w2] = r.split(";");
+    return {
+      q,
+      correct: c,
+      options: shuffle([c, w1, w2])
+    };
+  });
+
+  questions = shuffle(questions).slice(0, 50);
+  render();
+});
+
+function render() {
+  const form = document.getElementById("quiz");
+  questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `<p>${i+1}. ${q.q}</p>` +
+      q.options.map(o =>
+        `<label>
+          <input type="radio" name="q${i}" value="${o}"> ${o}
+        </label><br>`
+      ).join("");
+    form.appendChild(div);
+  });
+}
+
+function finish() {
+  const answers = [];
+
+  questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name=q${i}]:checked`);
+    answers.push({
+      question: q.q,
+      correct: q.correct,
+      userAnswer: selected ? selected.value : null
+    });
+  });
+
+  localStorage.setItem("results", JSON.stringify(answers));
+  window.location.href = "result.html";
+}
+
+}
+
+function shuffle(a) {
+  return a.sort(() => Math.random() - 0.5);
+}
+
+// TIMER
+setInterval(() => {
+  time--;
+  if (time <= 0) finish();
+  document.getElementById("timer").textContent =
+    Math.floor(time/60) + ":" + String(time%60).padStart(2,"0");
+}, 1000);
+</script>
+
+</body>
+</html>
