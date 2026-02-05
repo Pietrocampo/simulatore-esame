@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -23,28 +24,36 @@ let questions = [];
 let time = 50 * 60;
 
 fetch("domande.csv")
-.then(r => r.text())
-.then(text => {
-  const rows = text.trim().split("\n").slice(1);
-  questions = rows.map(r => {
-    const [q, c, w1, w2] = r.split(";");
-    return {
-      q,
-      correct: c,
-      options: shuffle([c, w1, w2])
-    };
+  .then(res => res.text())
+  .then(text => {
+    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+    const rows = lines.slice(1);
+
+    questions = rows.map(r => {
+      const parts = r.split(";");
+      return {
+        q: parts[0],
+        correct: parts[1],
+        options: shuffle([parts[1], parts[2], parts[3]])
+      };
+    });
+
+    questions = shuffle(questions).slice(0, 50);
+    renderQuiz();
+  })
+  .catch(err => {
+    alert("Errore nel caricamento delle domande");
+    console.error(err);
   });
 
-  questions = shuffle(questions).slice(0, 50);
-  render();
-});
-
-function render() {
+function renderQuiz() {
   const form = document.getElementById("quiz");
+  form.innerHTML = "";
+
   questions.forEach((q, i) => {
     const div = document.createElement("div");
     div.className = "question";
-    div.innerHTML = `<p>${i+1}. ${q.q}</p>` +
+    div.innerHTML = `<p><strong>${i+1}. ${q.q}</strong></p>` +
       q.options.map(o =>
         `<label>
           <input type="radio" name="q${i}" value="${o}"> ${o}
@@ -58,11 +67,11 @@ function finish() {
   const answers = [];
 
   questions.forEach((q, i) => {
-    const selected = document.querySelector(`input[name=q${i}]:checked`);
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
     answers.push({
       question: q.q,
       correct: q.correct,
-      userAnswer: selected ? selected.value : null
+      userAnswer: sel ? sel.value : null
     });
   });
 
@@ -70,13 +79,10 @@ function finish() {
   window.location.href = "result.html";
 }
 
-}
-
 function shuffle(a) {
   return a.sort(() => Math.random() - 0.5);
 }
 
-// TIMER
 setInterval(() => {
   time--;
   if (time <= 0) finish();
