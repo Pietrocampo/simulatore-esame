@@ -28,17 +28,18 @@ fetch("domande.csv")
   .then(text => {
     const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
     const rows = lines.slice(1);
-
-    questions = rows.map(r => {
-      const parts = r.split(";");
-      return {
-        q: parts[0],
-        correct: parts[1],
-        options: shuffle([parts[1], parts[2], parts[3]])
-      };
-    });
-
-
+questions = rows
+  .map(r => r.split(";"))
+  .filter(p => p.length >= 4 && p[0] && p[1] && p[2] && p[3])
+  .map(p => ({
+    q: p[0].trim(),
+    correct: p[1].trim(),
+    options: shuffle([
+      p[1].trim(),
+      p[2].trim(),
+      p[3].trim()
+    ])
+  }));
     questions = shuffle(questions).slice(0, 50);
     alert("Domande caricate: " + questions.length);
     renderQuiz();
@@ -95,4 +96,5 @@ setInterval(() => {
 
 </body>
 </html>
+
 
