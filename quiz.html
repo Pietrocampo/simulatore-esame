@@ -38,7 +38,9 @@ fetch("domande.csv")
       };
     });
 
+
     questions = shuffle(questions).slice(0, 50);
+    alert("Domande caricate: " + questions.length);
     renderQuiz();
   })
   .catch(err => {
@@ -93,3 +95,4 @@ setInterval(() => {
 
 </body>
 </html>
+
